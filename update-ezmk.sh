@@ -67,7 +67,7 @@ say "Fetching latest archive of ezmk..."
 cd "$MYTMPDIR"
 curl --tlsv1.2 --no-insecure --retry 2 --location --output "ezmk-main.zip" \
      "$GITHUB_ZIP_ARCHIVE_URL"
-unzip "ezmk-main.zip"
+unzip >&2 "ezmk-main.zip"
 cd ezmk-main
 sed -n -e '/^<!--/,/^-->$/p' README.md | sed -e '1d' -e '$d' > README
 rm README.md
