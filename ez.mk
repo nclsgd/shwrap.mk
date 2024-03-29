@@ -113,7 +113,7 @@ override undefine .ezmk.help_footer
 .ezmk.help:: override .ezmk.wrapper_preload_always :=# nothing
 .ezmk.help:: override awk_makedbparser  := $(.ezmk.path)/makedbparser.awk
 .ezmk.help:: override awk_helpformatter := $(.ezmk.path)/helpformatter.awk
-.ezmk.help:: override hide_targets := $(.ezmk.help_hide_targets)
+.ezmk.help:: override hide_targets = $(.ezmk.help_hide_targets)
 .ezmk.help:: override header = $(.ezmk.help_header)
 .ezmk.help:: override footer = $(.ezmk.help_footer)
 .ezmk.help:: override help_defined = $(.ezmk.help_target_defined)

@@ -64,3 +64,9 @@ test-messages:
 	msgerr "This is an error message with a message prefix."$$'\n'"With a second line to show proper text alignment."
 	msgok "This is a message for success with a message prefix."$$'\n'"With a second line to show proper text alignment."
 	printf >&2 '%sFake answer.\n' "$$(msgprompt "This is a fake question?"$$'\n'"With a second line to show proper alignment?")"
+
+.ezmk.help_hide_targets += dummy-target
+.PHONY: dummy-target
+dummy-target:
+	# Dummy target to be hidden from help test-message
+	msg "Hello world."
