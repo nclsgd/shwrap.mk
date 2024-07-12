@@ -5,9 +5,13 @@
 
 set -eu
 
-say() ( IFS=' '; if [ -n "$*" ]; then printf >&2 '%s\n' "${0##*/}: $*"; fi; )
-die() ( IFS=' '; printf >&2 '%s\n' "${0##*/}: ${*:-an error has occurred}"; exit 1; )
-quote() { printf '%s\n' "$1" | sed -e "s/'/'\\\\''/g" -e "1s/^/'/" -e "\$s/\$/'/"; }
+say() { if [ "$#" -ne 0 ]; then (IFS=' ';echo >&2 "${0##*/}: $*"); fi; }
+die() { (IFS=' ';echo >&2 "${0##*/}: ${*:-an error has occurred}"); exit 1; }
+quote() {
+	[ "${1+x}" ] || return 0; printf '%s' "$1|" | sed -e "s/'/'\\\\''/g" \
+	-e "1s/^/'/" -e "\$s/|\$/'/"; shift; while [ "${1+x}" ]; do printf '%s' \
+	"$1|" | sed -e "s/'/'\\\\''/g" -e "1s/^/ '/" -e "\$s/|\$/'/"; shift; done
+}
 
 # Check that program dependencies are there:
 DEPENDENCIES='readlink head curl mktemp unzip sed'

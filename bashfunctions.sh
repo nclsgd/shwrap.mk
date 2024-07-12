@@ -44,10 +44,13 @@ readonly -f misuse
 
 # ---
 
+# Quote arguments following POSIX sh syntax (i.e. this function behaves
+# differently from Bash special expansion "${varname@Q}" which produces a
+# single-line string using Bash-specific $'...' string literals):
 quote() { interrupt_xtrace _quote "$@"; }; readonly -f quote
 _quote() {
-	[[ "$#" -ge 1 ]] || return 0
-	local s; printf -v s '%s ' "${@@Q}"; printf '%s\n' "${s% }"
+	[[ "$#" -ge 1 ]] || return 0; printf '%s' "'${1//"'"/"'\\''"}'"; shift;
+	while [[ "$#" -ge 1 ]]; do printf '%s' " '${1//"'"/"'\\''"}'"; shift; done
 }
 readonly -f _quote
 
