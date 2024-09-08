@@ -53,11 +53,11 @@ esac; unset answer
 
 # ---
 
-GITHUB_REPOSITORY='https://github.com/nclsgd/ezmk'
+GITHUB_REPOSITORY='https://github.com/nclsgd/shwrap.mk'
 GITHUB_GIT_BRANCH='main'
 GITHUB_ZIP_ARCHIVE_URL="${GITHUB_REPOSITORY:?}/archive/refs/heads/${GITHUB_GIT_BRANCH:?}.zip"
 
-MYTMPDIR="$(mktemp -d ".update-ezmk.XXXXXXX")"
+MYTMPDIR="$(mktemp -d ".update-shwrapmk.XXXXXXX")"
 # shellcheck disable=SC2064
 trap "rm -rf -- $(quote "$MYTMPDIR") ||:; say 'An error has occurred.'" EXIT
 
@@ -66,13 +66,13 @@ url="$GITHUB_ZIP_ARCHIVE_URL"
 [ "${url#https://}" = "$url" ] && die "Not an HTTPS URL: $url"
 unset url
 
-say "Fetching latest archive of ezmk..."
+say "Fetching latest archive of shwrap.mk..."
 (
 cd "$MYTMPDIR"
-curl --tlsv1.2 --no-insecure --retry 2 --location --output "ezmk-main.zip" \
+curl --tlsv1.2 --no-insecure --retry 2 --location --output "shwrapmk-main.zip" \
      "$GITHUB_ZIP_ARCHIVE_URL"
-unzip >&2 "ezmk-main.zip"
-cd ezmk-main
+unzip >&2 "shwrapmk-main.zip"
+cd shwrapmk-main
 sed -n -e '/^<!--/,/^-->$/p' README.md | sed -e '1d' -e '$d' > README
 rm README.md
 rm -rf -- .git* tests
@@ -85,7 +85,7 @@ for f in .* ; do
 	rm -rf -- "$f"
 done
 
-cp -a "$MYTMPDIR"/ezmk-main/* ./
+cp -a "$MYTMPDIR"/shwrapmk-main/* ./
 rm -rf -- "$MYTMPDIR"
 trap - EXIT
 

@@ -5,18 +5,18 @@
 # Get the relative path to the directory of this present file (using our own
 # reserved Make variable name "dot"):
 override .thisdir := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
-override .ezmk.path := $(.thisdir)
+override .shwrap.path := $(.thisdir)
 
 # ---
 
 # Preliminary check: check GNU Make version and parse .FEATURES to make sure we
 # are on a recent GNU Make supporting all the required features:
 ifeq (3,$(firstword $(subst ., ,$(MAKE_VERSION))))
-$(error makefile library `ezmk' requires at least GNU Make 4.0)
+$(error makefile library `shwrap.mk' requires at least GNU Make 4.0)
 endif
 ifneq (3,$(words $(filter oneshell target-specific undefine,$(.FEATURES))))
 $(error this version of GNU Make $(MAKE_VERSION) does not seem to support \
-some required features for makefile library `ezmk')
+some required features for makefile library `shwrap.mk')
 endif
 
 # Warn when undefined variables are used:
@@ -24,7 +24,7 @@ GNUMAKEFLAGS += --warn-undefined-variables
 
 # Prevent Make from displaying messages of directory change as these messages
 # can make the output unncessarily noisy:
-ifndef .ezmk.make_print_directory
+ifndef .shwrap.make_print_directory
 GNUMAKEFLAGS += --no-print-directory
 endif
 
@@ -32,7 +32,7 @@ endif
 MAKEFLAGS += $(GNUMAKEFLAGS)
 
 # Do not echo back the content of the target recipes:
-ifndef .ezmk.no_make_silent
+ifndef .shwrap.no_make_silent
 .SILENT:
 endif
 
@@ -42,16 +42,16 @@ endif
 
 # Save the original SHELL environment variable value as we are going to
 # override it to env below for our little hack.
-override .ezmk.original_shell := $(SHELL)
+override .shwrap.original_shell := $(SHELL)
 
-# Override and undefine any .ezmk.wrapper_* variables that may be inherited
+# Override and undefine any .shwrap.* variables that may be inherited
 # from the environment or the Make command line variables or even earlier in
 # the Makefile inclusion list:
 $(foreach _,preload preload_always variables,$(eval override undefine \
-$(_:%=.ezmk.wrapper_%))$(eval $(_:%=.ezmk.wrapper_%):=))
+$(_:%=.shwrap.%))$(eval $(_:%=.shwrap.%):=))
 
-# Never inherit from environment or commandline the EZMKWRAPPER_* variables:
-$(foreach _,$(filter EZMKWRAPPER_%,$(.VARIABLES)),$(eval override undefine $_))
+# Never inherit from environment or commandline the SHWRAP_* variables:
+$(foreach _,$(filter SHWRAP_%,$(.VARIABLES)),$(eval override undefine $_))
 
 # It is important that the SHELL and .SHELLFLAGS variables must not be
 # inherited from the environment. Override them and set them as requested:
@@ -59,86 +59,86 @@ $(foreach _,$(filter EZMKWRAPPER_%,$(.VARIABLES)),$(eval override undefine $_))
 # Note: using /usr/bin/env as a trampoline to evade the Make shell detection
 # that strips some whitespaces and indentation from recipes.
 override SHELL := /usr/bin/env
-override .SHELLFLAGS = /bin/sh $(.ezmk.path)/wrapper.sh \
-    $(eval export EZMKWRAPPER_TARGET:=$$@) \
-    $(eval export EZMKWRAPPER_ORIGINAL_SHELL:=$$(.ezmk.wrapper_original_shell)) \
-    $(eval export EZMKWRAPPER_PRELOAD:=$$(foreach _,$$(.ezmk.wrapper_preload),$$(dir $$_)$$(notdir $$_))) \
-    $(eval export EZMKWRAPPER_PRELOAD_ALWAYS:=$$(foreach _,$$(.ezmk.wrapper_preload_always),$$(dir $$_)$$(notdir $$_))) \
-    $(eval export EZMKWRAPPER_VARIABLES:=$$(.ezmk.wrapper_variables)) \
-    $(foreach _,$(.ezmk.wrapper_variables),$(eval export EZMKWRAPPER_VARIABLE_$$_:=$$($$_))) \
-    $(eval export EZMKWRAPPER_SHELL:=$$(.ezmk.wrapper_shell)) \
-    $(eval export EZMKWRAPPER_SHELLFLAGS:=$$(.ezmk.wrapper_shellflags)) \
-    $(eval export EZMKWRAPPER_DISABLE:=$$(.ezmk.wrapper_disable)) \
-    $(eval export EZMKWRAPPER_ECHO:=$$(.ezmk.wrapper_echo)) \
-    $(eval export EZMKWRAPPER_PRINTCMD:=$$(.ezmk.print_command)) \
-    $(eval export EZMKWRAPPER_PRINTSCRIPT:=$$(.ezmk.print_script))
+override .SHELLFLAGS = /bin/sh $(.shwrap.path)/wrapper.sh \
+    $(eval export SHWRAP_TARGET:=$$@) \
+    $(eval export SHWRAP_ORIGINAL_SHELL:=$$(.shwrap.original_shell)) \
+    $(eval export SHWRAP_PRELOAD:=$$(foreach _,$$(.shwrap.preload),$$(dir $$_)$$(notdir $$_))) \
+    $(eval export SHWRAP_PRELOAD_ALWAYS:=$$(foreach _,$$(.shwrap.preload_always),$$(dir $$_)$$(notdir $$_))) \
+    $(eval export SHWRAP_VARIABLES:=$$(.shwrap.variables)) \
+    $(foreach _,$(.shwrap.variables),$(eval export SHWRAP_VARIABLE_$$_:=$$($$_))) \
+    $(eval export SHWRAP_SHELL:=$$(.shwrap.shell)) \
+    $(eval export SHWRAP_SHELLFLAGS:=$$(.shwrap.shellflags)) \
+    $(eval export SHWRAP_DISABLE:=$$(.shwrap.disable)) \
+    $(eval export SHWRAP_ECHO:=$$(.shwrap.echo)) \
+    $(eval export SHWRAP_PRINTCMD:=$$(.shwrap.print_command)) \
+    $(eval export SHWRAP_PRINTSCRIPT:=$$(.shwrap.print_script))
 
 # Explicitly do *NOT* export SHELL as it may break some scripts or third-party
 # programs used in Make recipes
 unexport SHELL
 
 # Defaults:
-.ezmk.wrapper_shell := /bin/sh
-.ezmk.wrapper_shellflags := -euc
+.shwrap.shell := /bin/sh
+.shwrap.shellflags := -euc
 
 # ---
 
 # This variable controls the list of recipes/targets to hide from the automatic
 # help messsage.  Target names can be appended to it by other makefiles.
-.ezmk.help_hide_targets := .ezmk.noop_target .ezmk.help .ezmk.list_targets
+.shwrap.help_hide_targets := .shwrap.noop_target .shwrap.help .shwrap.list_targets
 
 # Default to this target
-.DEFAULT_GOAL := .ezmk.help
+.DEFAULT_GOAL := .shwrap.help
 
-ifndef .ezmk.no_help_target
-override .ezmk.help_target_defined := 1
+ifndef .shwrap.no_help_target
+override .shwrap.help_target_defined := 1
 .PHONY: help
-help:: | .ezmk.help
+help:: | .shwrap.help
 else
-override .ezmk.help_target_defined := 0
+override .shwrap.help_target_defined := 0
 endif
 
 # A dummy "no operation" target:
-.PHONY: .ezmk.noop_target
-.ezmk.noop_target::
+.PHONY: .shwrap.noop_target
+.shwrap.noop_target::
 
 # header and footer for help must come from the makefiles:
-override undefine .ezmk.help_header
-override undefine .ezmk.help_footer
+override undefine .shwrap.help_header
+override undefine .shwrap.help_footer
 
-.PHONY: .ezmk.help
-.ezmk.help:: override .ezmk.wrapper_shell := /bin/sh
-.ezmk.help:: override .ezmk.wrapper_shellflags := -euc
-.ezmk.help:: override .ezmk.wrapper_preload :=# nothing
-.ezmk.help:: override .ezmk.wrapper_preload_always :=# nothing
-.ezmk.help:: override awk_makedbparser  := $(.ezmk.path)/makedbparser.awk
-.ezmk.help:: override awk_helpformatter := $(.ezmk.path)/helpformatter.awk
-.ezmk.help:: override hide_targets = $(.ezmk.help_hide_targets)
-.ezmk.help:: override header = $(.ezmk.help_header)
-.ezmk.help:: override footer = $(.ezmk.help_footer)
-.ezmk.help:: override help_defined = $(.ezmk.help_target_defined)
-.ezmk.help:: override makefile = $(firstword $(MAKEFILE_LIST))
-.ezmk.help:: override .ezmk.wrapper_variables := awk_makedbparser \
+.PHONY: .shwrap.help
+.shwrap.help:: override .shwrap.shell := /bin/sh
+.shwrap.help:: override .shwrap.shellflags := -euc
+.shwrap.help:: override .shwrap.preload :=# nothing
+.shwrap.help:: override .shwrap.preload_always :=# nothing
+.shwrap.help:: override awk_makedbparser  := $(.shwrap.path)/makedbparser.awk
+.shwrap.help:: override awk_helpformatter := $(.shwrap.path)/helpformatter.awk
+.shwrap.help:: override hide_targets = $(.shwrap.help_hide_targets)
+.shwrap.help:: override header = $(.shwrap.help_header)
+.shwrap.help:: override footer = $(.shwrap.help_footer)
+.shwrap.help:: override help_defined = $(.shwrap.help_target_defined)
+.shwrap.help:: override makefile = $(firstword $(MAKEFILE_LIST))
+.shwrap.help:: override .shwrap.variables := awk_makedbparser \
 awk_helpformatter header footer hide_targets help_defined makefile
-.ezmk.help::
+.shwrap.help::
 	color=; if [ -t 1 ] && [ -z "$${NO_COLOR:-}" ]; then color=1; fi; \
-	set +e; { LC_ALL=C $(MAKE) -npq -f "$$makefile" .ezmk.noop_target; printf '%s\n' "$$?"; } \
+	set +e; { LC_ALL=C $(MAKE) -npq -f "$$makefile" .shwrap.noop_target; printf '%s\n' "$$?"; } \
 	  | awk -f "$$awk_makedbparser" | LC_COLLATE=C sort -u \
 	  | header="$$header" footer="$$footer" hide_targets="$$hide_targets" \
 	    color="$$color" help_defined="$$help_defined" \
 	    awk -f "$$awk_helpformatter"
 
-.PHONY: .ezmk.list_targets
-.ezmk.list_targets:: override .ezmk.wrapper_shell := /bin/sh
-.ezmk.list_targets:: override .ezmk.wrapper_shellflags := -euc
-.ezmk.list_targets:: override .ezmk.wrapper_preload :=# nothing
-.ezmk.list_targets:: override .ezmk.wrapper_preload_always :=# nothing
-.ezmk.list_targets:: override awk_makedbparser := $(.ezmk.path)/makedbparser.awk
-.ezmk.list_targets:: override makefile = $(firstword $(MAKEFILE_LIST))
-.ezmk.list_targets:: override .ezmk.wrapper_variables := awk_makedbparser makefile
-.ezmk.list_targets::
+.PHONY: .shwrap.list_targets
+.shwrap.list_targets:: override .shwrap.shell := /bin/sh
+.shwrap.list_targets:: override .shwrap.shellflags := -euc
+.shwrap.list_targets:: override .shwrap.preload :=# nothing
+.shwrap.list_targets:: override .shwrap.preload_always :=# nothing
+.shwrap.list_targets:: override awk_makedbparser := $(.shwrap.path)/makedbparser.awk
+.shwrap.list_targets:: override makefile = $(firstword $(MAKEFILE_LIST))
+.shwrap.list_targets:: override .shwrap.variables := awk_makedbparser makefile
+.shwrap.list_targets::
 	color=; if [ -t 1 ] && [ -z "$${NO_COLOR:-}" ]; then color=1; fi; \
-	set +e; { LC_ALL=C $(MAKE) -npq -f "$$makefile" .ezmk.noop_target; printf '%s\n' "$$?"; } \
+	set +e; { LC_ALL=C $(MAKE) -npq -f "$$makefile" .shwrap.noop_target; printf '%s\n' "$$?"; } \
 	  | awk -f "$$awk_makedbparser" \
 	  | awk 'BEGIN{FS="\t"}($$1=="file"||$$1=="phony"){print $$1"\t"$$3}' \
 	  | LC_COLLATE=C sort -u
@@ -198,18 +198,18 @@ endef
 
 # ---
 
-# Bash common functions and its prologue snippet:
-ifndef .ezmk.no_bash_commons
+# EXTRA: Some opinionated Bash common functions and its prologue snippet:
+ifndef .shwrap.no_extra_bash_commons
 
 # The utilities and common functions expected in all targets using this
-.ezmk.wrapper_preload_always += $(.ezmk.path)/bashfunctions.sh \
-                                $(.ezmk.path)/bashprologue.sh
-override .ezmk.wrapper_shell := bash
-override .ezmk.wrapper_shellflags := -eu -o pipefail -c
+.shwrap.preload_always += $(.shwrap.path)/extras/functions.sh \
+                          $(.shwrap.path)/extras/prologue.sh
+override .shwrap.shell := bash
+override .shwrap.shellflags := -eu -o pipefail -c
 
 # These variables below need to be exported for the preloaded scripts just
 # above:
-.ezmk.wrapper_variables += trace trace_fd
+.shwrap.variables += trace trace_fd
 $(eval $(call .boolean,trace,false))
 
-endif  # ifndef .ezmk.no_bash_commons
+endif  # ifndef .shwrap.no_extra_bash_commons
