@@ -1,23 +1,26 @@
-`ezmk`: Turn makefiles into handy and featureful script wrappers with GNU Make
-==============================================================================
+`shwrap.mk`: Using GNU Make as a glorified shell script wrapper
+===============================================================
 
-This project is a portable and drop-in makefile library to turn GNU Make and
-associated makefiles into handy and featureful command or script wrappers.
-
-It has the convenience of not requiring any third-party program or any special
-toolchain to be installed on target systems, except of course for GNU Make and
-Bash (and some other fairly common tools like sed or Awk) which should all be
-easily available (or even already installed) on most "Unixy" systems.
+This project is a portable and drop-in makefile library to turn GNU Make
+makefiles into shell script wrappers that may come handy when integrated within
+other projects.
 
 <!--[THIS COMMENT IS WHAT REPLACES THIS WHOLE README FILE IN VENDOR COPIES]
-This is a vendor copy of `ezmk', a portable and drop-in makefile library to turn GNU Make and associated makefiles into handy and featureful command or script wrappers.
-More information on: https://github.com/nclsgd/ezmk
+This is a vendor copy of `shwrap.mk', a portable and drop-in makefile library to turn GNU Make makefiles into handy shell script wrappers.
+More information on: https://github.com/nclsgd/shwrap.mk
 -->
+
+This makefile library has the convenience of not requiring any third-party
+program or any special toolchain to be installed on target systems with (of
+course) the exception for GNU Make, a shell and some other fairly common tools
+like sed or Awk for which all should be easily available (or even already
+installed by default) on most Unix/Linux environments.
 
 Integrated and "vendored" in larger and more purposeful projects, this can
 serve as a handy way to wrap complex commands and still allowing to take
 advantage of the makefile targets auto-completion features (via the use of
 common makefile completion helpers, such as the _bash-completion_ functions).
+
 The `make` command also allows the user to chain recipe invocations (provided
 that these do not repeat in the same command, see _known caveats_ below).
 These recipes can then be seen as handy scripts or commands that provide
