@@ -49,8 +49,8 @@ readonly -f misuse
 # single-line string using Bash-specific $'...' string literals):
 quote() { interrupt_xtrace _quote "$@"; }; readonly -f quote
 _quote() {
-	[[ "$#" -ge 1 ]] || return 0; printf '%s' "'${1//"'"/"'\\''"}'"; shift;
-	while [[ "$#" -ge 1 ]]; do printf '%s' " '${1//"'"/"'\\''"}'"; shift; done
+	while [[ "${1+x}" ]]; do printf '%s' "'${1//"'"/"'\\''"}'";
+	printf "${2+ }"; shift; done
 }
 readonly -f _quote
 

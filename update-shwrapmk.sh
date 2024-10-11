@@ -8,9 +8,8 @@ set -eu
 say() { if [ "$#" -ne 0 ]; then (IFS=' ';echo >&2 "${0##*/}: $*"); fi; }
 die() { (IFS=' ';echo >&2 "${0##*/}: ${*:-an error has occurred}"); exit 1; }
 quote() {
-	[ "${1+x}" ] || return 0; printf '%s' "$1|" | sed -e "s/'/'\\\\''/g" \
-	-e "1s/^/'/" -e "\$s/|\$/'/"; shift; while [ "${1+x}" ]; do printf '%s' \
-	"$1|" | sed -e "s/'/'\\\\''/g" -e "1s/^/ '/" -e "\$s/|\$/'/"; shift; done
+	while [ "${1+x}" ]; do printf '|%s|' "$1" | sed -e "s/'/'\\\\''/g" -e \
+	"1s/^|/'/" -e "\$s/|\$/'/"; printf "${2+ }"; shift; done
 }
 
 # Check that program dependencies are there:
