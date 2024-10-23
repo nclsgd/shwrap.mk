@@ -198,12 +198,12 @@ endef
 
 # ---
 
-# EXTRA: Some opinionated Bash common functions and its prologue snippet:
-ifndef .shwrap.no_extra_bash_commons
+# OPTIONAL: Some opinionated Bash common functions and its prologue snippet:
+ifndef .shwrap.no_bash_commons
 
 # The utilities and common functions expected in all targets using this
-.shwrap.preload_always += $(.shwrap.path)/extras/functions.sh \
-                          $(.shwrap.path)/extras/prologue.sh
+.shwrap.preload_always += $(.shwrap.path)/bash/functions.sh \
+                          $(.shwrap.path)/bash/prologue.sh
 override .shwrap.shell := bash
 override .shwrap.shellflags := -eu -o pipefail -c
 
@@ -212,4 +212,4 @@ override .shwrap.shellflags := -eu -o pipefail -c
 .shwrap.variables += trace trace_fd
 $(eval $(call .boolean,trace,false))
 
-endif  # ifndef .shwrap.no_extra_bash_commons
+endif  # ifndef .shwrap.no_bash_commons
