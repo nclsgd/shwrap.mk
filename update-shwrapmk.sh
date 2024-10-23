@@ -74,7 +74,7 @@ unzip >&2 "shwrap.mk-main.zip"
 cd shwrap.mk-main
 sed -n -e '/^<!--/,/^-->$/p' README.md | sed -e '1d' -e '$d' > README
 rm README.md
-rm -rf -- .git* tests
+rm -rf -- .git* tests TODO
 )
 
 say "Replacing contents..."
