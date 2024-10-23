@@ -3,12 +3,15 @@
 # Copyright 2017-2024 Nicolas Godinho <nicolas@godinho.me>
 # SPDX-License-Identifier: MIT
 
-# This file provides my own little set of common library functions written in
-# pure Bash (relying the less possible on external POSIX programs). These
-# function set is intended to provide easy ways to print colorful messages on
-# the terminal (provided that stderr is a TTY), to show more thorough debugging
-# traces via the Bash xtrace option, to safely parse boolean values (as shell
-# scripts lack such kind of data type), etc.
+#
+# This file provides my own set of common library functions written in
+# pure Bash (no dependencies on programs, only Bash-specific features).
+# These function set is intended to provide easier means to:
+#   - print fancy messages on the terminal (provided that stderr is a TTY)
+#   - show more thorough debugging traces via the Bash xtrace option
+#   - safely parse boolean values (as shell lack such kind of data type)
+#   - and more.
+#
 
 # Bash >= 4.3 is required
 if [ -z "${BASH_VERSINFO:+ok}" ] || [[ "${BASH_VERSINFO[0]:-}" -lt 4 ]] ||
@@ -248,9 +251,10 @@ readonly -f set_fancy_xtrace_prompt_indicator
 
 # ---
 
-# Inspired from the OpenRC "yesno" Bash function (but without the part where it
-# dereferences the value if that one is not understandable as a
-# human-comprehensive boolean value):
+# Inspired from the OpenRC "yesno" Bash function, this function understands
+# "y/n", "yes/no", "true/false", "on/off", "1/0" as boolean values.
+# Unlike OpenRC yesno function, this does not dereferences the value if it is
+# not recognizable as a boolean value.
 booleval() { interrupt_xtrace _booleval "$@"; }; readonly -f booleval
 _booleval() {
 	[[ "$#" -eq 0 ]] && { misuse "missing boolean value argument"; exit 10; }
@@ -301,20 +305,20 @@ readonly -f _contains
 
 # ---
 
-# Function hacking around timeout option of the `read' builting to create a
-# pure-Bash sleep function that does not fork (which may be useful in some
-# sketchy scenarios where signal management is important).
+# Alternative to the sleep program. This function provides a way to sleep for a
+# given period (provided in seconds only or "infinity") without spawning a new
+# process. This may be useful in scenarios where signal handling is important.
 sleepnf() { interrupt_xtrace _sleepnf "$@"; }; readonly -f sleepnf
 _sleepnf() {
 	if [[ "$#" -ne 1 ]]; then
 		misuse "bad number of arguments"
 		return 1
-	elif [[ "${1,,}" == 'inf' ]]; then
+	elif [[ "${1,,}" =~ ^inf(inity)?$ ]]; then
 		read -r _ <> <(:) || :
 	elif [[ -n "$1" && "$1" =~ ^[0-9]*(\.[0-9]+)?$ ]]; then
 		read -r -t "$1" _ <> <(:) || :
 	else
-		misuse "argument is neither a number nor \"inf\""
+		misuse "unexpected argument: should be a number (of seconds) or \"inf\"/\"infinity\""
 		return 1
 	fi
 }

@@ -1,0 +1,14 @@
+** To-do list for the section features and caveats in the README file:
+
+Explain these:
+
+- Mac users still need to install GNU Make 4+ and Bash as the versions
+  provided by Apple are too old or missing mainly due to licensing issues.
+
+- Automatic generated help message with phony targets human description
+
+- This is done by parsing the GNU Make database and does not try to parse
+  makefiles
+
+- Provides a set of Bash functions and a common prologue that bring features to
+  recipes
