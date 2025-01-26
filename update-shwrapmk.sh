@@ -68,10 +68,10 @@ unset url
 say "Fetching latest archive of shwrap.mk..."
 (
 cd "$MYTMPDIR"
-curl --tlsv1.2 --no-insecure --retry 2 --location --output "shwrapmk-main.zip" \
+curl --tlsv1.2 --no-insecure --retry 2 --location --output "shwrap.mk-main.zip" \
      "$GITHUB_ZIP_ARCHIVE_URL"
-unzip >&2 "shwrapmk-main.zip"
-cd shwrapmk-main
+unzip >&2 "shwrap.mk-main.zip"
+cd shwrap.mk-main
 sed -n -e '/^<!--/,/^-->$/p' README.md | sed -e '1d' -e '$d' > README
 rm README.md
 rm -rf -- .git* tests TODO
@@ -84,7 +84,7 @@ for f in .* ; do
 	rm -rf -- "$f"
 done
 
-cp -a "$MYTMPDIR"/shwrapmk-main/* ./
+cp -a "$MYTMPDIR"/shwrap.mk-main/* ./
 rm -rf -- "$MYTMPDIR"
 trap - EXIT
 
