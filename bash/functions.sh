@@ -197,8 +197,8 @@ msgfail-() { interrupt_xtrace _msgfmt- failure "$@"; }; readonly -f msgfail-
 # This function formats an prompt invite as a string to be given to the `read'
 # builtin prompt option (-p).  Example of proper usage below:
 #
-#   prompt="$(msgprompt "Do you want to proceed? [Y|n]")"
-#   read [-r] [-e] [-t TIMEOUT] -p "$prompt" answer && : "${answer:=y}" ||
+#   msgprompt "Do you want to proceed? [Y|n]"
+#   read [-r] [-e] [-t TIMEOUT] answer && : "${answer:=y}" ||
 #       { answer="default answer if read fails"; linebreak; false; }
 #
 # Remember: Failure to read can occur upon timeout or bad prompt FD.
