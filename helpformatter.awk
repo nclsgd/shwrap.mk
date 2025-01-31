@@ -169,6 +169,9 @@ END {
 	}
 	if (footer != "") {
 		print "";
+		footer_title_msg = "Additional notes:";
+		if (color) footer_title_msg = underline footer_title_msg reset;
+		print footer_title_msg;
 		print footer;
 	}
 }
