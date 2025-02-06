@@ -103,13 +103,13 @@ _msgfmt-() {
 				printf >&2 "%s ${c}  ${r} %s\n" "$prefix" "$line"
 			fi; firstline='';
 		done ;;
-	info)
+	notice)
 		if [[ "$color" ]]; then c=$'\e[0;1;34m'; fi
 		while IFS='' read -r line; do
 			if [[ "$firstline" ]]; then
-				printf >&2 "%s${c}INFO:${r} ${b}%s${r}\n" "$prefix" "$line"
+				printf >&2 "%s${c}NOTICE:${r} ${b}%s${r}\n" "$prefix" "$line"
 			else
-				printf >&2 "%s${c}    |${r} ${b}%s${r}\n" "$prefix" "$line"
+				printf >&2 "%s${c}      |${r} ${b}%s${r}\n" "$prefix" "$line"
 			fi; firstline='';
 		done ;;
 	ok)
@@ -176,8 +176,8 @@ readonly -f _msgfmt-
 msg() { interrupt_xtrace _msgfmt message "$@"; }; readonly -f msg
 msg-() { interrupt_xtrace _msgfmt- message "$@"; }; readonly -f msg-
 
-msginfo() { interrupt_xtrace _msgfmt info "$@"; }; readonly -f msginfo
-msginfo-() { interrupt_xtrace _msgfmt- info "$@"; }; readonly -f msginfo-
+msgnotice() { interrupt_xtrace _msgfmt notice "$@"; }; readonly -f msgnotice
+msgnotice-() { interrupt_xtrace _msgfmt- notice "$@"; }; readonly -f msgnotice-
 
 msgok() { interrupt_xtrace _msgfmt ok "$@"; }; readonly -f msgok
 msgok-() { interrupt_xtrace _msgfmt- ok "$@"; }; readonly -f msgok-

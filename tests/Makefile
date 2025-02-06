@@ -36,17 +36,17 @@ test-messages:
 	# Unroll a sequence of dummy messages to visually test the message display
 	# functions.
 	msgprefix_unset
-	msg "This is a simple message."
-	msginfo "This is an informational message."
+	msg "This is a simple and informational message."
+	msgnotice "This is an notice message."
 	msgok "This is a message for success."
 	msgsuccess "This is a success message."
 	msgwarn "This is a warning message."
 	msgfail "This is a failure message."
 	msgerr "This is an error message."
 	printf >&2 '%sFake answer.\n' "$$(msgprompt "This is a fake question?")"
-	msg "This is a simple message."$$'\n'"With a second line to show proper text alignment."
-	msginfo-<<END
-	This is an informational message.
+	msg "This is another simple and informational message."$$'\n'"With a second line to show proper text alignment."
+	msgnotice-<<END
+	This is an notice message.
 	With a second line to show proper text alignment.
 	END
 	msgwarn "This is a warning message."$$'\n'"With a second line to show proper text alignment."
@@ -54,12 +54,12 @@ test-messages:
 	msgok "This is a message for success."$$'\n'"With a second line to show proper text alignment."
 	printf >&2 '%sFake answer.\n' "$$(msgprompt "This is a fake question?"$$'\n'"With a second line to show proper alignment?")"
 	msgprefix_set 'Sample prefix'
-	msg "This is a simple message with a message prefix."
+	msg "Yet another simple and informational message with a message prefix this time."
 	msgwarn "This is a warning message with a message prefix."
 	msgerr "This is an error message with a message prefix."
 	msgok "This is a message for success with a message prefix."
 	printf >&2 '%sFake answer.\n' "$$(msgprompt "This is a fake question?")"
-	msg "This is a simple message with a message prefix."$$'\n'"With a second line to show proper text alignment."
+	msg "Another simple and informational message with a message prefix."$$'\n'"With a second line to show proper text alignment."
 	msgwarn "This is a warning message with a message prefix."$$'\n'"With a second line to show proper text alignment."
 	msgerr "This is an error message with a message prefix."$$'\n'"With a second line to show proper text alignment."
 	msgok "This is a message for success with a message prefix."$$'\n'"With a second line to show proper text alignment."
